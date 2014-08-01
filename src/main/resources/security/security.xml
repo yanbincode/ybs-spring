@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/security" xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+		   http://www.springframework.org/schema/beans 
+		   http://www.springframework.org/schema/beans/spring-beans-3.0.xsd  
+           http://www.springframework.org/schema/security 
+		   http://www.springframework.org/schema/security/spring-security-3.1.xsd">
+
+	<!-- 指定请求不做拦截 -->
+	<http pattern="/login.do*" security="none" />
+	<!-- access-denied-page 出错后跳转的页面 -->
+	<http auto-config="true" access-denied-page="/error.jsp">
+		<!-- filters="none" ：指定请求不做拦截 。 3.1之后不兼容这种方式使用 <intercept-url pattern="/login.jsp" security="none" 
+			/> -->
+		<intercept-url pattern="/**" access="ROLE_USER" />
+		<!-- login-page:当用户登录时显示自定义登录页面 ；authentication-failure-url：登录失败时跳转到的页面 ；default-target-url：登录成功后跳转到哪个页面 -->
+		<form-login login-page="/login.do?method=login" authentication-failure-url="/login.do?method=fail"
+			default-target-url="/login.do?method=success" />
+		<logout logout-success-url="/login.do?method=logout" />
+
+		<!-- 实现免登陆验证 -->
+		<remember-me />
+
+		<!-- session 管理的设定 -->
+		<!-- session-fixation-protection="none" 什么都不做，继续使用原来的session
+			 session-fixation-protection="migrateSession" 创建一个新session，把原来session 中所有属性复制到新session
+			 session-fixation-protection="newSession" 创建一个新的“干净的”session，不会复制session 中的数据。
+			   防止伪造sessionid攻击. 用户登录成功后会销毁用户当前的session. 创建新的session,并把用户信息复制到新session中 
+		-->
+		<session-management session-fixation-protection="none" invalid-session-url="/login.do?method=timeout">
+			<!-- id登陆唯一. 后登陆的账号会挤掉第一次登陆的账号禁止2次登陆; 第二次登陆让第一次失效 -->
+			<!-- <concurrency-control max-sessions="1" /> -->
+			<!-- 唯一登陆，第一次登陆了，第二个登陆失败 -->
+			<concurrency-control max-sessions="1" error-if-maximum-exceeded="true" />
+		</session-management>
+	</http>
+
+	<!-- 权限管理操作 -->
+	<authentication-manager>
+		<authentication-provider>
+			<user-service>
+				<!-- 硬编码方式指定用户名和密码 -->
+				<user name="admin" password="admin" authorities="ROLE_USER, ROLE_ADMIN" />
+				<user name="user" password="user" authorities="ROLE_USER" />
+			</user-service>
+		</authentication-provider>
+	</authentication-manager>
+
+</beans:beans>

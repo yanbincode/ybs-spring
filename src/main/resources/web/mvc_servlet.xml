@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="     
+           http://www.springframework.org/schema/beans     
+           http://www.springframework.org/schema/beans/spring-beans-3.0.xsd     
+           http://www.springframework.org/schema/context     
+           http://www.springframework.org/schema/context/spring-context-3.0.xsd    
+           http://www.springframework.org/schema/mvc     
+           http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd">
+
+	<!-- 启动自动扫描所有的controller ，将controller自动依赖注入： 主要作用于@Controller，激活该模式 -->
+	<context:component-scan base-package="web.mvc.controller,web.upload,web.interceptor.web.controller,security.controller" />
+
+	<!-- 配置视图解析器：用于方便转向 -->
+	<bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="viewClass" value="org.springframework.web.servlet.view.JstlView" />
+		<property name="prefix" value="/WEB-INF/jsp/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+
+	<!-- 配置spring文件传输 -->
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<!-- 设置文件编码：默认编码 (ISO-8859-1) -->
+		<property name="defaultEncoding" value="utf-8" />
+		<!-- 最大上传大小 <property name="maxUploadSize" value="100000" /> -->
+		<!-- 内存中最大缓存 <property name="maxInMemorySize" value="1024" /> -->
+		<!-- 默认文件存放路径。没作用 <property name="uploadTempDir" value="/temp_file/" /> -->
+	</bean>
+
+	<!-- spring配置拦截器，利用3.x后的标签配置 -->
+	<!-- 拦截器，顺序按顺序执行 -->
+	<mvc:interceptors>
+		<!-- 可以直接配置拦截器 ，默认拦截所有controller -->
+		<!-- 计时拦截器 -->
+		<bean class="web.interceptor.SystemTimeAdapter" />
+		<!-- 配置拦截器，可以设定指定的匹配url -->
+		<mvc:interceptor>
+			<mvc:mapping path="/interceptor.do" />
+			<bean class="web.interceptor.DefinitInterceptor" />
+		</mvc:interceptor>
+		<mvc:interceptor>
+			<mvc:mapping path="/interceptor.do" />
+			<bean class="web.interceptor.DefinitAdapter" />
+		</mvc:interceptor>
+	</mvc:interceptors>
+
+</beans>

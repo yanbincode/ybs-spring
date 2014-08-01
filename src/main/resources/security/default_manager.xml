@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/security" xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+		   http://www.springframework.org/schema/beans 
+		   http://www.springframework.org/schema/beans/spring-beans-3.0.xsd  
+           http://www.springframework.org/schema/security 
+		   http://www.springframework.org/schema/security/spring-security-3.1.xsd">
+
+	<!-- 配置登陆 -->
+	<http pattern="/login.do*" security="none" />
+	<http use-expressions="true" entry-point-ref="simAuthenticationEntryPoint" access-denied-page="/error.jsp">
+		<form-login login-page="/login.do?method=login" authentication-failure-url="/login.do?method=fail"
+			default-target-url="/login.do?method=success" />
+		<logout logout-success-url="/login.do?method=logout" />
+
+		<session-management session-fixation-protection="none" invalid-session-url="/login.do?method=timeout">
+			<concurrency-control max-sessions="10" error-if-maximum-exceeded="true" />
+		</session-management>
+
+		<!-- 自定义登录过滤器 
+		<custom-filter ref="authenticationFilter" position="FORM_LOGIN_FILTER" />-->
+		<!-- 自定义权限过滤器，针对资源权限的控制 -->
+		<custom-filter ref="authorityFilter" before="FILTER_SECURITY_INTERCEPTOR" />
+	</http>
+
+	<!-- 未登录的切入点：即未登录的情况下，跳转到登录的页面 -->
+	<beans:bean id="simAuthenticationEntryPoint"
+		class="org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint">
+		<beans:property name="loginFormUrl" value="/login.do?method=login" />
+	</beans:bean>
+
+	<!-- 自定义登录验证器：验证用户有没有登录的资格
+	<beans:bean id="authenticationFilter" class="security.filter.AuthenticationFilter">
+		<beans:property name="filterProcessesUrl" value="/j_spring_security_check" />
+		<beans:property name="authenticationSuccessHandler">
+			<beans:bean
+				class="org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler">
+				<beans:property name="defaultTargetUrl" value="/login.do?method=success" />
+			</beans:bean>
+		</beans:property>
+		<beans:property name="authenticationFailureHandler">
+			<beans:bean
+				class="org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler">
+				<beans:property name="defaultFailureUrl" value="/login.do?method=fail" />
+			</beans:bean>
+		</beans:property>
+	</beans:bean>
+
+
+	<!-- 自定义配置的权限验证过程： -->
+	<!-- 1、容器启动(SimSecurityMetadataSource：loadResourceDefine加载系统资源与权限列表) -->
+	<!-- 2、用户发出请求 -->
+	<!-- 3、过滤器拦截(AuthorityFilter:doFilter) -->
+	<!-- 4、取得请求资源所需权限(SimSecurityMetadataSource:getAttributes) -->
+	<!-- 5、匹配用户拥有权限和请求权限(SimAccessDecisionManager:decide)，如果用户没有相应的权限，执行第6步，否则执行第7步 -->
+	<!-- 6、登录 -->
+	<!-- 7、验证并授权(SimUserDetailsService:loadUserByUsername) -->
+	<!-- 8、重复4,5 -->
+
+	<!-- 配置自定义过滤器:包括必要的三个组件:authenticationManager,accessDecisionManager,securityMetadataSource三个属性 -->
+	<beans:bean id="authorityFilter" class="security.filter.AuthorityFilter">
+		<!-- 用户拥有的权限 -->
+		<beans:property name="authenticationManager" ref="simAuthenticationManager" />
+		<!-- 用户是否拥有所请求资源的权限 -->
+		<beans:property name="accessDecisionManager" ref="simAccessDecisionManager" />
+		<!-- 资源与权限对应关系 -->
+		<beans:property name="securityMetadataSource" ref="simSecurityMetadataSource" />
+	</beans:bean>
+
+	<!-- 验证配置，认证管理器，实现用户认证的入口，主要实现UserDetailsService接口即可。alias指定manager别名 -->
+	<authentication-manager alias="simAuthenticationManager">
+		<authentication-provider user-service-ref="simUserDetailsService" />
+	</authentication-manager>
+
+	<!--访问决策器，决定某个用户具有的角色，是否有足够的权限去访问某个资源 -->
+	<beans:bean id="simAccessDecisionManager" class="security.manager.SimAccessDecisionManager" />
+
+	<!--资源数据定义，将所有的资源和权限对应关系建立起来，即定义某一资源可以被哪些角色访问 -->
+	<beans:bean id="simSecurityMetadataSource" class="security.manager.SimSecurityMetadataSource" />
+
+	<!-- 在这个类中，你就可以从数据库中读入用户的密码，角色信息，是否锁定，账号是否过期等 -->
+	<beans:bean id="simUserDetailsService" class="security.manager.SimUserDetailsService" />
+
+</beans:beans>

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jee="http://www.springframework.org/schema/jee"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans     
+          http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+          http://www.springframework.org/schema/context     
+          http://www.springframework.org/schema/context/spring-context-3.0.xsd
+          http://www.springframework.org/schema/jee
+          http://www.springframework.org/schema/jee/spring-jee-3.0.xsd"
+	default-autowire="byName">
+
+	<context:annotation-config />
+	<context:component-scan base-package="datasource.dao" />
+
+	<!-- spring配置dataSource -->
+
+	<!-- 指定dataSource参数的方式： 1、直接利用property属性注入，并写死 ； -->
+	<!-- 2、写在properties 文件中，利用PropertyPlaceholderConfigurer解析； -->
+	<!-- 3、在容器的jndi中指定，利用jee:jndi-lookup标签解析 -->
+	<!-- 4、利用Spring 自带的 DriverManagerDataSource 解析 -->
+
+	<!-- 在解析获取sql.DataSource对象的方式 1、dbcp 连接池解析 ；2、c3p0 获取数据源 -->
+
+	<!--
+	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="oracle.jdbc.driver.OracleDriver" />
+		<property name="url" value="jdbc:oracle:thin:@127.0.0.1:1521:root" />
+		<property name="username" value="system" />
+		<property name="password" value="root" />
+	</bean>
+	-->
+
+	<!--
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+		<property name="driverClassName" value="oracle.jdbc.driver.OracleDriver" />
+		<property name="url" value="jdbc:oracle:thin:@127.0.0.1:1521:root" />
+		<property name="username" value="system" />
+		<property name="password" value="root" />
+	</bean>
+	-->
+
+	<!-- 利用PropertyPlaceholderConfigure指定外部的数据库连接属性 -->
+	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<!-- locations属性是个集合 -->
+		<property name="locations">
+			<list>
+				<value>classpath:datasource/database.properties</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+		<property name="driverClass" value="${database.driver}" />
+		<property name="jdbcUrl" value="${database.url}" />
+		<property name="user" value="${database.username}" />
+		<property name="password" value="${database.password}" />
+	</bean>
+
+	<!-- jndi命名 
+	<jee:jndi-lookup id="jndi" jndi-name="java:comp/env/jdbc/DataSource" />
+	<bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+		<property name="jndiName" value="java:comp/env/jdbc/DataSource" />
+	</bean>
+	-->
+
+</beans>

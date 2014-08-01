@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans     
+          http://www.springframework.org/schema/beans/spring-beans-3.0.xsd"
+	default-autowire="byName"> <!-- 全局配置，自动装配类型。以下的bean可以都不需要显示指定 -->
+
+	<bean id="oracle" class="ioc.bean.impl.OracleDBImpl">
+		<!-- 简单属性的注入 -->
+		<property name="username" value="admin" />
+		<property name="password" value="admin" />
+	</bean>
+	<!-- 会自动注入 -->
+	<bean id="mysql" class="ioc.bean.impl.MysqlDBImpl">
+		<property name="username" value="mysql" />
+		<property name="password" value="mysql" />
+	</bean>
+	<bean id="mssql" class="ioc.bean.impl.MssqlDBImpl">
+		<property name="username" value="mssql" />
+		<property name="password" value="mssql" />
+	</bean>
+
+
+	<!-- ioc注入方式：构造方法注入 和 setter注入 -->
+	<!-- lazy-init属性，延迟实例化，不在容器启动时初始化，而是使用时初始化 -->
+	<!-- bean scope:singleton(默认，单例) prototy 多例 request session ; global session -->
+	<!-- autowire 自动装备：不用指定，spring自己找bean。 默认属性为no不自动装配，byName 根据name ；byType根据类型，类型不唯一会抛错 -->
+	<!-- init-method : 指定bean初始化调用方法 ；destroy-method:指定bean销毁时调用的方法 -->
+	<bean id="dbUser" class="ioc.bean.impl.DBUserImpl" lazy-init="true" scope="singleton" autowire="byName"
+		init-method="init" destroy-method="destroy">
+
+		<!-- 其实就是：注入构造方法的参数 -->
+		<!-- <constructor-arg index="0" value="oracle" /> <constructor-arg> -->
+		<!-- 直接指定class 或者用ref 关联已经定义的bean -->
+		<!-- <bean class="ioc.bean.impl.OracleDBImpl"/> <ref bean="oracle" /> </constructor-arg> -->
+
+		<!-- setter方式注入 : 常用 -->
+		<property name="useDbName" value="oracle" />
+		<property name="oracle" ref="oracle" />
+
+		<!-- 集合属性的配置；用的并不多 -->
+		<property name="list">
+			<list>
+				<value>oracle</value>
+				<value>mysql</value>
+				<value>sqlserver</value>
+			</list>
+		</property>
+		<property name="set">
+			<set>
+				<value>oracle</value>
+				<value>mysql</value>
+				<value>sqlserver</value>
+			</set>
+		</property>
+		<property name="map">
+			<map>
+				<entry>
+					<key>
+						<value>o</value>
+					</key>
+					<value>oracle</value>
+				</entry>
+				<entry>
+					<key>
+						<value>my</value>
+					</key>
+					<value>mysql</value>
+				</entry>
+				<entry>
+					<key>
+						<value>ms</value>
+					</key>
+					<value>sqlserver</value>
+				</entry>
+			</map>
+		</property>
+		<property name="properties">
+			<props>
+				<prop key="o">oracle</prop>
+				<prop key="my">mysql</prop>
+				<prop key="ms">sqlserver</prop>
+			</props>
+		</property>
+	</bean>
+</beans>

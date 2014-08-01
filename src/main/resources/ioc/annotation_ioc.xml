@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans     
+          http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+          http://www.springframework.org/schema/context     
+          http://www.springframework.org/schema/context/spring-context-3.0.xsd"
+	default-autowire="byName"><!-- spring-context 注解需要导入 -->
+	<!-- dtd文件 ，xsd文件是对xml格式的约束和规范 -->
+
+	<!-- 开启注解 -->
+	<context:annotation-config />
+	<!-- 利用注解实例化对象，需要开启自动扫描。指定包位置 -->
+	<context:component-scan base-package="ioc.annotation.bean" />
+
+	<!-- 利用@Component等注解，则不需要再配置bean了 -->
+	<!-- 
+		<bean id="oracle" class="ioc.annotation.bean.impl.OracleDBImpl" />
+		<bean id="mysql" class="ioc.annotation.bean.impl.MysqlDBImpl" />
+		<bean id="dbUser" class="ioc.annotation.bean.impl.DBUserImpl" />
+	 -->
+	<!-- 利用@Autowired等注解，则不需要xml配置关联 -->
+
+</beans>
