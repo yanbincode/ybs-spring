@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans>
+	<bean id="oracle" class="bean.impl.OracleDBImpl">
+		<!-- property 对应的就是set方法；注入属性 -->
+		<property name="username" value="admin" />
+		<property name="password" value="admin" />
+	</bean>
+</beans>
