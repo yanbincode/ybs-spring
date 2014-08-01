@@ -1,0 +1,10 @@
+@Autowired
+@Qualifier
+@Resource
+@Component
+@Controller
+@Service
+@Repository
+@Scrop
+@PostConstruct
+@PreDestroy
