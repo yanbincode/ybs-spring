@@ -66,29 +66,23 @@
 			<groupId>dom4j</groupId>
 			<artifactId>dom4j</artifactId>
 		</dependency>
-		<!-- javaee -->
 		<dependency>
-			<groupId>javax.javaee</groupId>
-			<artifactId>javaee</artifactId>
-			<!-- 在部署的时候，由web容器提供，不需要此包。因为容器中就有，版本不同，启动会报错 -->
-			<scope>provided</scope>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
 		</dependency>
 
 		<!-- 这些包项目中忽略之后，在新build项目的时候会找不到这个包 -->
 		<dependency>
 			<groupId>com.sun.faces</groupId>
 			<artifactId>jsf-api</artifactId>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.sun.faces</groupId>
 			<artifactId>jsf-impl</artifactId>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>jstl</groupId>
+			<groupId>javax.servlet</groupId>
 			<artifactId>jstl</artifactId>
-			<scope>provided</scope>
 		</dependency>
 
 		<!-- spring -->
