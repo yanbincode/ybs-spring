@@ -11,15 +11,15 @@ import ioc.bean.DB;
 import ioc.bean.DBUser;
 
 public class DBUserImpl implements DBUser {
-	/** 注入属性：基本类型 */
+	/** 属性注入：基本类型 */
 	private String useDbName;
 
-	/** 注入属性：指定接口 */
+	/** 属性注入：指定接口 */
 	private DB oracle;
 	private DB mysql;
 	private DB mssql;
 
-	/** 注入属性：集合属性 */
+	/** 属性注入：集合属性 */
 	private Map<String, String> map;
 	private List<String> list;
 	private Set<String> set;
